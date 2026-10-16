@@ -122,7 +122,7 @@ async function ats(id,btn){
  try{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   const{data}=await sb.storage.from('cvs').download(c.path);const text=await pdfText(data);
   if(text.trim().length<50)throw Error('No readable text found. Scanned/image CVs fail ATS too!');
-  const r=await fetch('/.netlify/functions/ats',{method:'POST',body:JSON.stringify({text})});const j=await r.json();if(!r.ok)throw Error(j.error);
+  const{data:j,error:fe}=await sb.functions.invoke('ats',{body:{text}});if(fe||!j||j.error)throw Error(j?.error||'ATS check failed. Try again.');
   await sb.from('cvs').update({ats_score:j.score,ats_feedback:j.tips}).eq('id',id);studentView()
  }catch(e){toast(e.message);btn.textContent='ATS score';btn.disabled=false}}
 
