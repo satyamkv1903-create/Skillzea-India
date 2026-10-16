@@ -37,6 +37,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:9px;borde
 </style></head><body>
 <div id="auth"></div><div id="app" hidden></div><div id="toast"></div>
 <script>
+window.onerror=(m,u,l)=>{const t=document.getElementById('toast');if(t){t.textContent='Error: '+m+' (line '+l+')';t.classList.add('on')}};
 const SB_URL='https://eyfvjclwqtkjclxmsvhh.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5ZnZqY2x3cXRramNseG1zdmhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxMjU5MzksImV4cCI6MjEwNzcwMTkzOX0._tct5s95gNwn_U59VP1uY5l8qVm1y7NmV8h747Wczxo';
 const sb=supabase.createClient(SB_URL,SB_KEY),$=s=>document.querySelector(s),v=id=>$('#'+id)?.value.trim();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -69,7 +70,7 @@ async function boot(){
  const{data:p}=await sb.from('profiles').select('*').eq('id',session.user.id).single();me=p;
  $('#auth').hidden=true;$('#app').hidden=false;me.role==='admin'?adminView():studentView();
 }
-const pub=async f=>{if(!f)return null;const p=Date.now()+'_'+f.name.replace(/\W+/g,'_');const{error}=await sb.storage.from('public').upload(p,f);if(error){toast(error.message);return null}return sb.storage.from('public').getPublicUrl(p).data.publicUrl};
+const pub=async f=>{if(!f)return null;const p=Date.now()+'_'+f.name.replace(/[^\w.-]+/g,'_');const{error}=await sb.storage.from('public').upload(p,f);if(error){toast(error.message);return null}return sb.storage.from('public').getPublicUrl(p).data.publicUrl};
 const openCv=async path=>{const w=window.open('','_blank');const{data}=await sb.storage.from('cvs').createSignedUrl(path,300);w.location=data.signedUrl};
 const ini=s=>esc((s||'?')[0].toUpperCase());
 
@@ -100,7 +101,7 @@ async function studentView(){
 }
 const batchCard=b=>`<div class=card><div class=ban>${esc(b.course_name)}</div><b>${esc(b.course_name)}</b><br><small>Mentor: ${esc(b.mentor_name)}</small><br><small>${esc(b.duration)} • ₹${esc(b.price)}${b.start_date?' • Starts '+esc(b.start_date):''}</small><p class=mut>${esc(b.mentor_about)}</p>${b.mentor_cv_url?`<a class=lnk target=_blank href="${esc(b.mentor_cv_url)}">Mentor CV</a>`:''}<button class=btn onclick="window.open('${esc(b.form_link)}','_blank')">Enroll now</button></div>`;
 const oppRow=o=>`<div class=row><div class=lg>${o.logo_url?`<img class=lg src="${esc(o.logo_url)}">`:ini(o.company)}</div><div class=g><b>${esc(o.title)}</b><br><small class=mut>${esc(o.company)} • ${esc(o.location)}</small></div><span class=mut>${esc(o.duration)}</span><span class=pill>${esc(o.pay_type)}</span><button class="btn sm" onclick="applyOpen('${o.id}')">Apply Now</button></div>`;
-const cvRow=c=>`<div class=row><div class=g><a class=lnk onclick="openCv('${esc(c.path)}')">${esc(c.name)}</a>${c.ats_score!=null?`<div class=bar><i style="width:${c.ats_score}%"></i></div><small class=mut>ATS score: <b>${c.ats_score}/100</b></small><br><small class=mut>${esc(c.ats_feedback)}</small>`:''}</div><button class="btn sm dk" onclick="ats('${c.id}',this)">ATS score</button><button class="btn sm" onclick="delCv('${c.id}')">Delete</button><button class="btn sm" onclick="delCv('${c.id}')">Delete</button><button class="btn sm" onclick="delCv('${c.id}')">Delete</button></div>`;
+const cvRow=c=>`<div class=row><div class=g><a class=lnk onclick="openCv('${esc(c.path)}')">${esc(c.name)}</a>${c.ats_score!=null?`<div class=bar><i style="width:${c.ats_score}%"></i></div><small class=mut>ATS score: <b>${c.ats_score}/100</b></small><br><small class=mut>${esc(c.ats_feedback)}</small>`:''}</div><button class="btn sm dk" onclick="ats('${c.id}',this)">ATS score</button><button class="btn sm" onclick="delCv('${c.id}')">Delete</button></div>`;
 function find(t){t=t.toLowerCase();$('#ol').innerHTML=D.opps.filter(o=>(o.title+o.company).toLowerCase().includes(t)).map(oppRow).join('');$('#bl').innerHTML=D.batches.filter(b=>(b.course_name+b.mentor_name).toLowerCase().includes(t)).map(batchCard).join('')}
 async function upCv(){
  const f=$('#cvf').files[0];if(!f)return toast('Choose a file first');
@@ -115,7 +116,10 @@ function applyOpen(id){
  $('#go').onclick=async()=>{const w=window.open('','_blank');
   const{error}=await sb.from('applications').insert({user_id:me.id,opportunity_id:id,cv_id:$('#pick').value});
   if(error){w.close();return toast(error.message)}w.location=o.apply_link;m.remove();studentView()}}
-onclick="atsasync function delCv(id){const c=D.cvs.find(x=>x.id===id);if(!confirm('Delete this CV? This cannot be undone.'))return; const{error}=await sb.from('cvs').delete().eq('id',id);if(error)return toast(error.message); await sb.storage.from('cvs').remove([c.path]);toast('CV deleted');studentView()} async function delCv(id){const c=D.cvs.find(x=>x.id===id);if(!confirm('Delete this CV? This cannot be undone.'))return; const{error}=await sb.from('cvs').delete().eq('id',id);if(error)return toast(error.message); await sb.storage.from('cvs').remove([c.path]);toast('CV deleted');studentView()} async function pdfText(blob)('${c.id}',this)">ATS score</button><button class="btn sm" onclick="delCv('${c.id}')">Delete</button>{const pdf=await pdfjsLib.getDocument({data:await blob.arrayBuffer()}).promise;let t='';for(let i=1;i<=Math.min(pdf.numPages,5);i++){t+=(await(await pdf.getPage(i)).getTextContent()).items.map(x=>x.str).join(' ')+'\n'}return t}
+async function delCv(id){const c=D.cvs.find(x=>x.id===id);if(!confirm('Delete this CV? This cannot be undone.'))return;
+ const{error}=await sb.from('cvs').delete().eq('id',id);if(error)return toast(error.message);
+ await sb.storage.from('cvs').remove([c.path]);toast('CV deleted');studentView()}
+async function pdfText(blob){const pdf=await pdfjsLib.getDocument({data:await blob.arrayBuffer()}).promise;let t='';for(let i=1;i<=Math.min(pdf.numPages,5);i++){t+=(await(await pdf.getPage(i)).getTextContent()).items.map(x=>x.str).join(' ')+'\n'}return t}
 async function ats(id,btn){
  const c=D.cvs.find(x=>x.id===id);if(!c.name.toLowerCase().endsWith('.pdf'))return toast('ATS score works with PDF files');
  btn.textContent='Analysing...';btn.disabled=true;
