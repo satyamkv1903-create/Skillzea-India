@@ -1,0 +1,152 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SkillZea</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{--t:#4ee6e0;--tb:#e6faf9;--ink:#0d2a2f;--mut:#6b7f83;--bd:#dcecec}
+*{box-sizing:border-box}body{margin:0;font-family:Poppins,sans-serif;color:var(--ink);background:#f4fbfb;font-size:14px}
+button,input,select,textarea{font:inherit}input,select,textarea{width:100%;padding:11px 14px;border:1px solid var(--bd);border-radius:12px;margin:5px 0;background:#fff}
+.btn{background:var(--t);color:var(--ink);border:0;border-radius:99px;padding:10px 18px;font-weight:600;cursor:pointer}.btn.dk{background:var(--ink);color:#fff}.btn.sm{padding:7px 14px;font-size:13px}
+.lnk{color:#0a8f8a;cursor:pointer;margin:6px 0;font-size:13px}
+#auth{min-height:100vh;display:grid;place-items:center;padding:20px}.ac{background:#fff;border-radius:22px;padding:32px;width:100%;max-width:400px;border:1px solid var(--bd)}
+.logo{font-size:30px;font-weight:700;line-height:1}.logo small{display:block;background:var(--t);color:#fff;font-size:12px;font-weight:500;padding:3px 10px;border-radius:8px;width:fit-content;margin-top:4px}
+#app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+aside{padding:22px 16px;border-right:1px solid var(--bd);background:#fff;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+aside a{display:flex;gap:12px;align-items:center;padding:12px 16px;border-radius:14px;color:var(--ink);text-decoration:none;font-weight:500;cursor:pointer}aside a.on{background:var(--t)}
+.tag{font-family:Caveat,cursive;font-size:30px;line-height:1.05;margin-top:auto;transform:rotate(-8deg);color:var(--ink)}
+main{padding:18px 24px;min-width:0}.top{display:flex;gap:16px;align-items:center;margin-bottom:16px}.top input{border-radius:99px;margin:0;flex:1}
+.who{display:flex;gap:8px;align-items:center;font-weight:600;white-space:nowrap}.av{width:38px;height:38px;border-radius:50%;background:var(--t);display:grid;place-items:center}
+.news{background:var(--ink);color:#fff;border-radius:14px;padding:10px 16px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap}.news b{background:var(--t);color:var(--ink);border-radius:99px;padding:0 10px}
+.grid{display:grid;grid-template-columns:1.9fr 1fr;gap:18px}.hero{background:linear-gradient(120deg,var(--tb),#c9f5f2);border-radius:20px;padding:28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.hero h1{margin:0 0 8px;font-size:30px;line-height:1.15}.hero p{margin:0;color:#35575c;max-width:340px}.hero .em{font-size:90px}
+.stats{display:grid;gap:14px}.stat{background:#fff;border:1px solid var(--bd);border-radius:18px;padding:14px 18px}.stat b{font-size:30px;display:block}.stat span{color:var(--mut);font-size:13px}
+.sec{background:#fff;border:1px solid var(--bd);border-radius:20px;padding:18px;margin-bottom:18px}.sec h3{margin:0 0 14px;font-size:19px;display:flex;justify-content:space-between;align-items:center}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}.card{border:1px solid var(--bd);border-radius:16px;padding:12px}
+.ban{background:var(--ink);color:#fff;border-radius:12px;padding:16px;font-weight:700;font-size:18px;min-height:74px;margin-bottom:10px}
+.card small,.mut{color:var(--mut);font-size:12px}.card .btn{width:100%;margin-top:10px}
+.row{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--bd)}.row:first-of-type{border-top:0}.row .g{flex:1;min-width:0}
+.lg{width:44px;height:44px;border-radius:12px;background:var(--tb);object-fit:contain;display:grid;place-items:center;font-weight:700}
+.pill{background:var(--tb);border-radius:99px;padding:2px 12px;font-size:12px}.bar{height:8px;background:#e8f1f1;border-radius:9px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--t)}
+.foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.foot a{background:var(--tb);border-radius:16px;padding:16px;text-decoration:none;color:var(--ink);font-weight:600;text-align:center}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tabs button{border:1px solid var(--bd);background:#fff;border-radius:99px;padding:8px 18px;cursor:pointer}.tabs .on{background:var(--t);border-color:var(--t);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:9px;border-top:1px solid var(--bd);text-align:left;vertical-align:top}
+.mod{position:fixed;inset:0;background:#0008;display:grid;place-items:center;z-index:9}.mod>div{background:#fff;border-radius:20px;padding:24px;width:min(420px,92vw)}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,80px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:99px;transition:.3s;z-index:20}#toast.on{transform:translate(-50%,0)}
+@media(max-width:900px){#app{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.tag{display:none}.grid{grid-template-columns:1fr}}
+</style></head><body>
+<div id="auth"></div><div id="app" hidden></div><div id="toast"></div>
+<script>
+const SB_URL='PASTE_SUPABASE_URL',SB_KEY='PASTE_SUPABASE_ANON_KEY';
+const sb=supabase.createClient(SB_URL,SB_KEY),$=s=>document.querySelector(s),v=id=>$('#'+id)?.value.trim();
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3200)};
+const LOGO='<div class="logo">SkillZea<small>Evolve.Learn.Conquer</small></div>';
+let me,D={},resetEmail='';
+const LINKS={ig:'https://instagram.com/skillzea_official',li:'https://www.linkedin.com/company/skillzea-india/posts/?viewAsMember=true',wa:'https://chat.whatsapp.com/CLEUmVkfZhGC3XXPeUQKyZ'};
+
+function authView(m='login'){
+ $('#app').hidden=true;$('#auth').hidden=false;
+ const F={
+ login:`<h2>Welcome back</h2><input id=e type=email placeholder="Email"><input id=p type=password placeholder="Password"><button class="btn" onclick=login()>Log in</button><p class=lnk onclick="authView('forgot')">Forgot password?</p><p class=lnk onclick="authView('signup')">New here? Create an account</p>`,
+ signup:`<h2>Create your account</h2><input id=n placeholder="Full name"><input id=c placeholder="College name"><input id=co placeholder="Course (e.g. BA Psychology)"><input id=ph placeholder="Phone number"><input id=e type=email placeholder="Email"><input id=p type=password placeholder="Password (min 6 characters)"><button class="btn" onclick=signup()>Sign up</button><p class=lnk onclick="authView('login')">Already registered? Log in</p>`,
+ forgot:`<h2>Reset password</h2><p class=mut>We'll email you a one-time code.</p><input id=e type=email placeholder="Email"><button class="btn" onclick=sendOtp()>Send code</button><p class=lnk onclick="authView('login')">Back to login</p>`,
+ reset:`<h2>Enter the code</h2><p class=mut>Check your email for the code.</p><input id=o placeholder="Code from email"><input id=p type=password placeholder="New password"><button class="btn" onclick=doReset()>Save new password</button>`};
+ $('#auth').innerHTML=`<div class=ac>${LOGO}<br>${F[m]}</div>`;
+}
+async function login(){const{error}=await sb.auth.signInWithPassword({email:v('e'),password:$('#p').value});error?toast(error.message):boot()}
+async function signup(){
+ const{data,error}=await sb.auth.signUp({email:v('e'),password:$('#p').value,options:{data:{name:v('n'),college:v('c'),course:v('co'),phone:v('ph')}}});
+ if(error)return toast(error.message);data.session?boot():(toast('Check your email to confirm, then log in'),authView('login'))}
+async function sendOtp(){resetEmail=v('e');const{error}=await sb.auth.resetPasswordForEmail(resetEmail);error?toast(error.message):(toast('Code sent'),authView('reset'))}
+async function doReset(){
+ let r=await sb.auth.verifyOtp({email:resetEmail,token:v('o'),type:'recovery'});if(r.error)return toast(r.error.message);
+ r=await sb.auth.updateUser({password:$('#p').value});r.error?toast(r.error.message):(toast('Password updated'),boot())}
+const logout=async()=>{await sb.auth.signOut();authView()};
+
+async function boot(){
+ const{data:{session}}=await sb.auth.getSession();if(!session)return authView();
+ const{data:p}=await sb.from('profiles').select('*').eq('id',session.user.id).single();me=p;
+ $('#auth').hidden=true;$('#app').hidden=false;me.role==='admin'?adminView():studentView();
+}
+const pub=async f=>{if(!f)return null;const p=Date.now()+'_'+f.name.replace(/\W+/g,'_');const{error}=await sb.storage.from('public').upload(p,f);if(error){toast(error.message);return null}return sb.storage.from('public').getPublicUrl(p).data.publicUrl};
+const openCv=async path=>{const w=window.open('','_blank');const{data}=await sb.storage.from('cvs').createSignedUrl(path,300);w.location=data.signedUrl};
+const ini=s=>esc((s||'?')[0].toUpperCase());
+
+/* ---------- STUDENT ---------- */
+async function studentView(){
+ const q=(t,o)=>sb.from(t).select(o||'*').order('created_at',{ascending:false});
+ const[a,b,c,d,e]=await Promise.all([q('opportunities'),q('batches'),q('updates').limit(3),q('cvs'),q('applications','*,opportunities(title,company),cvs(name)')]);
+ D={opps:a.data||[],batches:b.data||[],ups:c.data||[],cvs:(d.data||[]).filter(x=>x.user_id===me.id),apps:e.data||[]};
+ $('#app').innerHTML=`<aside>${LOGO}<br>
+ <a class=on href="#top">🏠 Dashboard</a><a href="#batches">📖 Batches</a><a href="#opps">💼 Internships</a><a href="#cvs">📄 My CVs & ATS</a><a href="#apps">✅ Applications</a><a href="#about">ℹ️ About & Contact</a><a onclick=logout()>↩ Log out</a>
+ <div class=tag>Better Skills<br>Bigger Dreams</div></aside>
+ <main id=top><div class=top><input placeholder="Search courses, batches, internships..." oninput="find(this.value)"><div class=who><div class=av>${ini(me.name)}</div>${esc(me.name)}</div></div>
+ ${D.ups.length?`<div class=news><b>New</b>${D.ups.map(u=>`<span>${esc(u.text)}</span>`).join(' • ')}</div>`:''}
+ <div class=grid><div>
+  <div class=hero><div><h1>Hey ${esc(me.name.split(' ')[0])},<br>Keep going!</h1><p>Every course, every step, brings you closer to your bigger dreams.</p></div><div class=em>👩‍💻</div></div>
+  <div class=sec id=batches><h3>Upcoming Batches</h3><div class=cards id=bl>${D.batches.map(batchCard).join('')||'<p class=mut>No batch announced yet. Check back soon!</p>'}</div></div>
+  <div class=sec id=opps><h3>Available Internships & Opportunities</h3><div id=ol>${D.opps.map(oppRow).join('')||'<p class=mut>No opportunities yet.</p>'}</div></div>
+ </div><div>
+  <div class=stats style="grid-template-columns:repeat(3,1fr);margin-bottom:18px"><div class=stat><b>${D.apps.length}</b><span>Applications</span></div><div class=stat><b>${D.cvs.length}</b><span>CVs</span></div><div class=stat><b>${D.batches.length}</b><span>Batches</span></div></div>
+  <div class=sec id=cvs><h3>My CVs</h3>
+   <input type=file id=cvf accept=".pdf,.doc,.docx"><button class="btn sm" onclick=upCv()>Upload CV</button>
+   <div style="margin-top:10px">${D.cvs.map(cvRow).join('')||'<p class=mut>Upload your CV (PDF works best for ATS score).</p>'}</div></div>
+  <div class=sec id=apps><h3>My Applications</h3>${D.apps.map(x=>`<div class=row><div class=g><b>${esc(x.opportunities?.title)}</b><br><small class=mut>${esc(x.opportunities?.company)} • CV: ${esc(x.cvs?.name)} • ${new Date(x.created_at).toLocaleDateString()}</small></div></div>`).join('')||'<p class=mut>You haven\'t applied yet.</p>'}</div>
+ </div></div>
+ <div class=sec id=about><h3>About, Contact & Community</h3><div class=foot>
+  <a href="mailto:contact@skillzea.com">📧 Contact us</a><a href="#about" onclick="toast('SkillZea: Evolve. Learn. Conquer.')">ℹ️ About us</a>
+  <a target=_blank rel=noopener href="${LINKS.li}">💼 Our LinkedIn page</a><a target=_blank rel=noopener href="${LINKS.ig}">📸 Instagram page</a><a target=_blank rel=noopener href="${LINKS.wa}">💬 WhatsApp community</a></div></div></main>`;
+}
+const batchCard=b=>`<div class=card><div class=ban>${esc(b.course_name)}</div><b>${esc(b.course_name)}</b><br><small>Mentor: ${esc(b.mentor_name)}</small><br><small>${esc(b.duration)} • ₹${esc(b.price)}${b.start_date?' • Starts '+esc(b.start_date):''}</small><p class=mut>${esc(b.mentor_about)}</p>${b.mentor_cv_url?`<a class=lnk target=_blank href="${esc(b.mentor_cv_url)}">Mentor CV</a>`:''}<button class=btn onclick="window.open('${esc(b.form_link)}','_blank')">Enroll now</button></div>`;
+const oppRow=o=>`<div class=row><div class=lg>${o.logo_url?`<img class=lg src="${esc(o.logo_url)}">`:ini(o.company)}</div><div class=g><b>${esc(o.title)}</b><br><small class=mut>${esc(o.company)} • ${esc(o.location)}</small></div><span class=mut>${esc(o.duration)}</span><span class=pill>${esc(o.pay_type)}</span><button class="btn sm" onclick="applyOpen('${o.id}')">Apply Now</button></div>`;
+const cvRow=c=>`<div class=row><div class=g><a class=lnk onclick="openCv('${esc(c.path)}')">${esc(c.name)}</a>${c.ats_score!=null?`<div class=bar><i style="width:${c.ats_score}%"></i></div><small class=mut>ATS score: <b>${c.ats_score}/100</b></small><br><small class=mut>${esc(c.ats_feedback)}</small>`:''}</div><button class="btn sm dk" onclick="ats('${c.id}',this)">ATS score</button></div>`;
+function find(t){t=t.toLowerCase();$('#ol').innerHTML=D.opps.filter(o=>(o.title+o.company).toLowerCase().includes(t)).map(oppRow).join('');$('#bl').innerHTML=D.batches.filter(b=>(b.course_name+b.mentor_name).toLowerCase().includes(t)).map(batchCard).join('')}
+async function upCv(){
+ const f=$('#cvf').files[0];if(!f)return toast('Choose a file first');
+ const path=`${me.id}/${Date.now()}_${f.name.replace(/\W+/g,'_')}`;
+ let r=await sb.storage.from('cvs').upload(path,f);if(r.error)return toast(r.error.message);
+ r=await sb.from('cvs').insert({user_id:me.id,name:f.name,path});r.error?toast(r.error.message):(toast('CV uploaded'),studentView())}
+function applyOpen(id){
+ const o=D.opps.find(x=>x.id===id);if(!D.cvs.length)return toast('Upload a CV first');
+ const m=document.createElement('div');m.className='mod';
+ m.innerHTML=`<div><h3>Apply: ${esc(o.title)}</h3><p class=mut>${esc(o.company)}</p><select id=pick>${D.cvs.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select><p class=mut>Your CV will be saved here, then you'll go to the company's form to finish applying.</p><button class=btn id=go>Continue</button> <button class="btn dk" onclick="this.closest('.mod').remove()">Cancel</button></div>`;
+ document.body.append(m);
+ $('#go').onclick=async()=>{const w=window.open('','_blank');
+  const{error}=await sb.from('applications').insert({user_id:me.id,opportunity_id:id,cv_id:$('#pick').value});
+  if(error){w.close();return toast(error.message)}w.location=o.apply_link;m.remove();studentView()}}
+async function pdfText(blob){const pdf=await pdfjsLib.getDocument({data:await blob.arrayBuffer()}).promise;let t='';for(let i=1;i<=Math.min(pdf.numPages,5);i++){t+=(await(await pdf.getPage(i)).getTextContent()).items.map(x=>x.str).join(' ')+'\n'}return t}
+async function ats(id,btn){
+ const c=D.cvs.find(x=>x.id===id);if(!c.path.toLowerCase().endsWith('.pdf'))return toast('ATS score works with PDF files');
+ btn.textContent='Analysing...';btn.disabled=true;
+ try{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const{data}=await sb.storage.from('cvs').download(c.path);const text=await pdfText(data);
+  if(text.trim().length<50)throw Error('No readable text found. Scanned/image CVs fail ATS too!');
+  const r=await fetch('/.netlify/functions/ats',{method:'POST',body:JSON.stringify({text})});const j=await r.json();if(!r.ok)throw Error(j.error);
+  await sb.from('cvs').update({ats_score:j.score,ats_feedback:j.tips}).eq('id',id);studentView()
+ }catch(e){toast(e.message);btn.textContent='ATS score';btn.disabled=false}}
+
+/* ---------- ADMIN ---------- */
+const tabs={users:'Students & CVs',opps:'Opportunities',batches:'Courses / Batches',ups:'Updates'};
+async function adminView(t='users'){
+ $('#app').style.display='block';
+ $('#app').innerHTML=`<main><div class=top>${LOGO}<div style="flex:1"></div><span class=pill>Admin</span><button class="btn sm dk" onclick=logout()>Log out</button></div>
+ <div class=tabs>${Object.entries(tabs).map(([k,n])=>`<button class="${k===t?'on':''}" onclick="adminView('${k}')">${n}</button>`).join('')}</div><div id=ab></div></main>`;
+ const B=$('#ab');
+ if(t==='users'){
+  const[p,c,a]=await Promise.all([sb.from('profiles').select('*').neq('role','admin'),sb.from('cvs').select('*'),sb.from('applications').select('user_id,opportunities(title)')]);
+  B.innerHTML=`<div class=sec style="overflow:auto"><table><tr><th>Name</th><th>College</th><th>Course</th><th>Phone</th><th>Email</th><th>CVs</th><th>Applied to</th></tr>${(p.data||[]).map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.college)}</td><td>${esc(u.course)}</td><td>${esc(u.phone)}</td><td>${esc(u.email)}</td><td>${(c.data||[]).filter(x=>x.user_id===u.id).map(x=>`<a class=lnk onclick="openCv('${esc(x.path)}')">${esc(x.name)}</a>${x.ats_score!=null?' ('+x.ats_score+')':''}`).join('<br>')}</td><td>${(a.data||[]).filter(x=>x.user_id===u.id).map(x=>esc(x.opportunities?.title)).join('<br>')}</td></tr>`).join('')}</table></div>`}
+ if(t==='opps'){const r=await sb.from('opportunities').select('*').order('created_at',{ascending:false});
+  B.innerHTML=`<div class=sec><h3>Add opportunity</h3><input id=ti placeholder="Title (e.g. Content Intern)"><input id=co placeholder="Company name"><input id=lo placeholder="Location (Remote / City)"><input id=du placeholder="Duration (e.g. 3 Months)"><select id=pt><option>Paid</option><option>Stipend</option><option>Unpaid</option></select><label class=mut>Company logo</label><input type=file id=lg accept="image/*"><input id=al placeholder="Apply link (company form or website)"><button class=btn onclick="addOpp()">Publish opportunity</button></div><div class=sec>${(r.data||[]).map(o=>oppRow(o).replace(/<button.*<\/button>/,`<button class="btn sm dk" onclick="del('opportunities','${o.id}','opps')">Delete</button>`)).join('')}</div>`}
+ if(t==='batches'){const r=await sb.from('batches').select('*').order('created_at',{ascending:false});
+  B.innerHTML=`<div class=sec><h3>List a course</h3><input id=cn placeholder="Course name"><input id=mn placeholder="Mentor name"><textarea id=ma placeholder="About the mentor"></textarea><label class=mut>Mentor CV</label><input type=file id=mc><input id=cd placeholder="Course duration (e.g. 6 weeks)"><input id=cp placeholder="Price in ₹"><label class=mut>Start date</label><input type=date id=sd><input id=fl placeholder="Response form link"><button class=btn onclick="addBatch()">Publish course</button></div><div class=sec><div class=cards>${(r.data||[]).map(b=>batchCard(b).replace(/<button.*<\/button>/,`<button class="btn dk" onclick="del('batches','${b.id}','batches')">Delete</button>`)).join('')}</div></div>`}
+ if(t==='ups'){const r=await sb.from('updates').select('*').order('created_at',{ascending:false});
+  B.innerHTML=`<div class=sec><h3>Post an update</h3><input id=ut placeholder="e.g. New batch: Digital Marketing starts 1 Nov!"><button class=btn onclick="addUp()">Post to all students</button></div><div class=sec>${(r.data||[]).map(u=>`<div class=row><div class=g>${esc(u.text)}</div><button class="btn sm dk" onclick="del('updates','${u.id}','ups')">Delete</button></div>`).join('')}</div>`}
+}
+const done=(r,t)=>r.error?toast(r.error.message):(toast('Saved'),adminView(t));
+async function addOpp(){const logo=await pub($('#lg').files[0]);done(await sb.from('opportunities').insert({title:v('ti'),company:v('co'),location:v('lo'),duration:v('du'),pay_type:v('pt'),logo_url:logo,apply_link:v('al')}),'opps')}
+async function addBatch(){const cv=await pub($('#mc').files[0]);done(await sb.from('batches').insert({course_name:v('cn'),mentor_name:v('mn'),mentor_about:v('ma'),mentor_cv_url:cv,duration:v('cd'),price:v('cp'),start_date:v('sd')||null,form_link:v('fl')}),'batches')}
+async function addUp(){done(await sb.from('updates').insert({text:v('ut')}),'ups')}
+async function del(t,id,tab){if(confirm('Delete this?'))done(await sb.from(t).delete().eq('id',id),tab)}
+boot();
+</script></body></html>
