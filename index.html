@@ -5,7 +5,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{--t:#4ee6e0;--tb:#e6faf9;--ink:#0d2a2f;--mut:#6b7f83;--bd:#dcecec}
-*{box-sizing:border-box}body{margin:0;font-family:Poppins,sans-serif;color:var(--ink);background:#f4fbfb;font-size:14px}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;font-family:Poppins,sans-serif;color:var(--ink);background:#f4fbfb;font-size:14px}
 button,input,select,textarea{font:inherit}input,select,textarea{width:100%;padding:11px 14px;border:1px solid var(--bd);border-radius:12px;margin:5px 0;background:#fff}
 .btn{background:var(--t);color:var(--ink);border:0;border-radius:99px;padding:10px 18px;font-weight:600;cursor:pointer}.btn.dk{background:var(--ink);color:#fff}.btn.sm{padding:7px 14px;font-size:13px}
 .lnk{color:#0a8f8a;cursor:pointer;margin:6px 0;font-size:13px}
@@ -104,7 +104,7 @@ const cvRow=c=>`<div class=row><div class=g><a class=lnk onclick="openCv('${esc(
 function find(t){t=t.toLowerCase();$('#ol').innerHTML=D.opps.filter(o=>(o.title+o.company).toLowerCase().includes(t)).map(oppRow).join('');$('#bl').innerHTML=D.batches.filter(b=>(b.course_name+b.mentor_name).toLowerCase().includes(t)).map(batchCard).join('')}
 async function upCv(){
  const f=$('#cvf').files[0];if(!f)return toast('Choose a file first');
- const path=`${me.id}/${Date.now()}_${f.name.replace(/\W+/g,'_')}`;
+ const path=`${me.id}/${Date.now()}_${f.name.replace(/[^\w.-]+/g,'_')}`;
  let r=await sb.storage.from('cvs').upload(path,f);if(r.error)return toast(r.error.message);
  r=await sb.from('cvs').insert({user_id:me.id,name:f.name,path});r.error?toast(r.error.message):(toast('CV uploaded'),studentView())}
 function applyOpen(id){
@@ -117,7 +117,7 @@ function applyOpen(id){
   if(error){w.close();return toast(error.message)}w.location=o.apply_link;m.remove();studentView()}}
 async function pdfText(blob){const pdf=await pdfjsLib.getDocument({data:await blob.arrayBuffer()}).promise;let t='';for(let i=1;i<=Math.min(pdf.numPages,5);i++){t+=(await(await pdf.getPage(i)).getTextContent()).items.map(x=>x.str).join(' ')+'\n'}return t}
 async function ats(id,btn){
- const c=D.cvs.find(x=>x.id===id);if(!c.path.toLowerCase().endsWith('.pdf'))return toast('ATS score works with PDF files');
+ const c=D.cvs.find(x=>x.id===id);if(!c.name.toLowerCase().endsWith('.pdf'))return toast('ATS score works with PDF files');
  btn.textContent='Analysing...';btn.disabled=true;
  try{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   const{data}=await sb.storage.from('cvs').download(c.path);const text=await pdfText(data);
