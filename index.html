@@ -37,7 +37,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:9px;borde
 </style></head><body>
 <div id="auth"></div><div id="app" hidden></div><div id="toast"></div>
 <script>
-const SB_URL='https://eyfvjclwqtkjclxmsvhh.supabase.co/rest/v1',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5ZnZqY2x3cXRramNseG1zdmhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxMjU5MzksImV4cCI6MjEwNzcwMTkzOX0._tct5s95gNwn_U59VP1uY5l8qVm1y7NmV8h747Wczxo';
+const SB_URL='https://eyfvjclwqtkjclxmsvhh.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5ZnZqY2x3cXRramNseG1zdmhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxMjU5MzksImV4cCI6MjEwNzcwMTkzOX0._tct5s95gNwn_U59VP1uY5l8qVm1y7NmV8h747Wczxo';
 const sb=supabase.createClient(SB_URL,SB_KEY),$=s=>document.querySelector(s),v=id=>$('#'+id)?.value.trim();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3200)};
